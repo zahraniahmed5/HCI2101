@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة إكس أو - HCI Lab 2</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #f0f2f5; text-align: center; }
+        .container { background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; margin: 50px auto; }
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        .cell { background: #ddd; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; border-radius: 8px; }
+        .cell.x { color: blue; } .cell.o { color: red; }
+        button { padding: 10px 20px; font-size: 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        footer { margin-top: 30px; font-size: 14px; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>لعبة X O</h1>
+        <h2 id="status">اللاعب X يبدأ</h2>
+        <div class="board" id="board"></div>
+        <button onclick="resetGame()">لعبة جديدة</button>
+        
+        <footer>
+            <hr>
+            <p><strong>Student Name:</strong> AHMED HASSAN MOHAMMED ALZAHRANI (أحمد حسن محمد الزهراني)</p>
+            <p><strong>Student ID:</strong> 446005483</p>
+            <p><strong>Supervised by:</strong> Mohammed Ahmed Jabali</p>
+        </footer>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        let cells = Array(9).fill(null);
+        let current = 'X';
+        
+        function init() {
+            board.innerHTML = '';
+            cells.forEach((_, i) => {
+                const div = document.createElement('div');
+                div.className = 'cell';
+                div.onclick = () => move(i);
+                board.appendChild(div);
+            });
+        }
+
+        function move(i) {
+            if (!cells[i]) {
+                cells[i] = current;
+                current = current === 'X' ? 'O' : 'X';
+                render();
+            }
+        }
+
+        function render() {
+            document.querySelectorAll('.cell').forEach((div, i) => {
+                div.innerText = cells[i] || '';
+                if(cells[i]) div.classList.add(cells[i].toLowerCase());
+            });
+            document.getElementById('status').innerText = `دور اللاعب: ${current}`;
+        }
+
+        function resetGame() {
+            cells = Array(9).fill(null);
+            current = 'X';
+            render();
+        }
+        init();
+    </script>
+</body>
+</html>
