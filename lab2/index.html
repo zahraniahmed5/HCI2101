@@ -8,10 +8,11 @@
         body { font-family: Tahoma, sans-serif; background: #f0f2f5; text-align: center; }
         .container { background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; margin: 50px auto; }
         .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
-        .cell { background: #ddd; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; border-radius: 8px; }
+        .cell { background: #ddd; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; border-radius: 8px; font-weight: bold;}
         .cell.x { color: blue; } .cell.o { color: red; }
         button { padding: 10px 20px; font-size: 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
         footer { margin-top: 30px; font-size: 14px; color: #333; }
+        #status { color: #333; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -33,6 +34,13 @@
         const board = document.getElementById('board');
         let cells = Array(9).fill(null);
         let current = 'X';
+        let gameActive = true;
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // صفوف
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // أعمدة
+            [0, 4, 8], [2, 4, 6]             // أقطار
+        ];
         
         function init() {
             board.innerHTML = '';
@@ -45,24 +53,55 @@
         }
 
         function move(i) {
-            if (!cells[i]) {
+            if (!cells[i] && gameActive) {
                 cells[i] = current;
-                current = current === 'X' ? 'O' : 'X';
                 render();
+                checkWinner();
+                if (gameActive) {
+                    current = current === 'X' ? 'O' : 'X';
+                    document.getElementById('status').innerText = `دور اللاعب: ${current}`;
+                }
+            }
+        }
+
+        function checkWinner() {
+            let roundWon = false;
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                document.getElementById('status').innerText = `مبروك! الفائز هو ${current}`;
+                document.getElementById('status').style.color = "green";
+                gameActive = false;
+                return;
+            }
+
+            if (!cells.includes(null)) {
+                document.getElementById('status').innerText = "تعادل!";
+                gameActive = false;
+                return;
             }
         }
 
         function render() {
             document.querySelectorAll('.cell').forEach((div, i) => {
                 div.innerText = cells[i] || '';
+                div.className = 'cell'; // reset class
                 if(cells[i]) div.classList.add(cells[i].toLowerCase());
             });
-            document.getElementById('status').innerText = `دور اللاعب: ${current}`;
         }
 
         function resetGame() {
             cells = Array(9).fill(null);
             current = 'X';
+            gameActive = true;
+            document.getElementById('status').innerText = `اللاعب X يبدأ`;
+            document.getElementById('status').style.color = "#333";
             render();
         }
         init();
